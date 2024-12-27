@@ -27,17 +27,26 @@ def start_server():
     print("Connection established!")
 
     try:
+        ofile = b""
         while True:
             # Receive data
             data = conn.recv(1024)
             if not data:
                 break
+            ofile+=data
             print(f"Received: {data.decode()}")
 
             # Send a response
             conn.sendall(b"Message received!")
     finally:
         # Close the connection and clean up
+        file_name, file_content = ofile.decode().split('\n', 1)
+
+        # Write the file contents to a new file
+        with open(file_name, 'w') as f:
+            f.write(file_content)
+
+        print(f"{ofile.decode()}")
         conn.close()
         server_socket.close()
         os.unlink(socket_path)
